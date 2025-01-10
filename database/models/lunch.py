@@ -13,13 +13,19 @@ class Dish(Base):
     price = Column(Float)  # Цена
     available = Column(Boolean)  # Достпно для заказа
     image = Column(String)  # Картинка блюда
+    type = Column(String)
+    stop_list = Column(Boolean, default=False)  # на стопе ли блюдо?
 
 
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     telegram_id = Column(Integer)
+    telegram_name = Column(String)
+    telegram_username = Column(String)
     full_name = Column(String)
+    is_support = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
 
 
 class Order(Base):
