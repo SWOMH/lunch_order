@@ -1,10 +1,12 @@
 from fastapi import HTTPException
 from .core import DatabaseCore
 import os
-from .models.lunch import User, Dish, Order, OrderItem
+from .models.lunch import User, Dish, Order, OrderItem, DishVariant
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
 class Database(DatabaseCore):
     def __init__(self):
         user = os.getenv('POSTGRES_USER')
@@ -40,10 +42,30 @@ class Database(DatabaseCore):
             return {"message": "Пользователь успешно зарегистрирован", "telegram_id": id,
                     "full_name": full_name}
 
-    def get_all_lanch(self):
+    def get_all_dishes_with_variants(self):
         session = self.Session()
         with session:
-            return session.query(Dish).all()
+            query = (
+                session.query(Dish, DishVariant)
+                .join(DishVariant, Dish.id == DishVariant.dish_id)
+                .all()
+            )
+            result = {}
+            for dish, variant in query:
+                if dish.id not in result:
+                    result[dish.id] = {
+                        "dish_name": dish.dish_name,
+                        "description": dish.description,
+                        "available": dish.available,
+                        "stop_list": dish.stop_list,
+                        "variants": []
+                    }
+                result[dish.id]["variants"].append({
+                    "size": variant.size,
+                    "price": variant.price
+                })
+
+            return result
 
 
     def ordering_food(self, foods: list[int], telegram_id: int):

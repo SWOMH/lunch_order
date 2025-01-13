@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+dish_list.py
 # C extensions
 *.so
 

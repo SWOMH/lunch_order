@@ -8,13 +8,21 @@ from datetime import datetime
 class Dish(Base):
     __tablename__ = 'dish'
     id = Column(Integer, primary_key=True)
-    dish_name = Column(String)  # Блюдо
-    description = Column(String)
-    price = Column(Float)  # Цена
-    available = Column(Boolean)  # Достпно для заказа
+    dish_name = Column(String, nullable=False)  # Блюдо
+    description = Column(String)  # Описание
+    price = Column(Float, nullable=False)  # Цена
+    available = Column(Boolean, default=True, nullable=False)  # Достпно для заказа
     image = Column(String)  # Картинка блюда
-    type = Column(String)
+    type = Column(String, nullable=False)  # Тип блюда
     stop_list = Column(Boolean, default=False)  # на стопе ли блюдо?
+
+
+class DishVariant(Base):
+    __tablename__ = 'dish_variant'
+    id = Column(Integer, primary_key=True)
+    dish_id = Column(Integer, ForeignKey('public.dish.id', ondelete='CASCADE'), nullable=False)
+    size = Column(String, nullable=False)  # Размер/вариант блюда (например, "Маленький", "Большой")
+    price = Column(Float, nullable=False)  # Цена для этого варианта
 
 
 class User(Base):
@@ -23,7 +31,7 @@ class User(Base):
     telegram_id = Column(Integer)
     telegram_name = Column(String)
     telegram_username = Column(String)
-    full_name = Column(String)
+    full_name = Column(String, nullable=False)
     is_support = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
 
@@ -31,7 +39,7 @@ class User(Base):
 class Order(Base):
     __tablename__ = 'orders'
     id = Column(Integer, primary_key=True)  # Уникальный номер заказа
-    user_id = Column(Integer, ForeignKey('public.user.id'))  # Кто сделал заказ
+    user_id = Column(Integer, ForeignKey('public.user.id'), nullable=False)  # Кто сделал заказ
     datetime = Column(DateTime, default=datetime.now())  # Когда сделан заказ
 
 
