@@ -10,7 +10,7 @@ class Dish(Base):
     id = Column(Integer, primary_key=True)
     dish_name = Column(String, nullable=False)  # Блюдо
     description = Column(String)  # Описание
-    price = Column(Float, nullable=False)  # Цена
+    price = Column(Float, nullable=True)  # Цена
     available = Column(Boolean, default=True, nullable=False)  # Достпно для заказа
     image = Column(String)  # Картинка блюда
     type = Column(String, nullable=False)  # Тип блюда
