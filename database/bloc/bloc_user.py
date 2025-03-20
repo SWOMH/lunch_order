@@ -1,7 +1,7 @@
 from fastapi import HTTPException
-from .core import DatabaseCore
+from database.core import DatabaseCore
 import os
-from .models.lunch import User, Dish, Order, OrderItem, DishVariant
+from database.models.lunch import User, Dish, Order, OrderItem, DishVariant
 from dotenv import load_dotenv
 
 load_dotenv()
