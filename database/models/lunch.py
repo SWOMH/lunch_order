@@ -37,6 +37,7 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(nullable=False)  # Полное имя пользователя
     is_support: Mapped[bool] = mapped_column(default=False)  # Является ли пользователь поддержкой
     is_admin: Mapped[bool] = mapped_column(default=False)  # Является ли пользователь администратором
+    banned: Mapped[bool] = mapped_column(default=False)  # Забанен ли пользователь
 
 
 class Order(Base):
