@@ -1,5 +1,5 @@
 from sqlalchemy import ForeignKey, Time, Column, Integer, Float, String, Date, Boolean, DateTime
-from ..core import Base
+from ..base import Base
 from datetime import datetime
 
 # TABLE REVENUE =============================================>
