@@ -2,8 +2,14 @@ from typing import Union
 from fastapi import FastAPI
 from database.bloc import *
 from database.dish_list import dishes
+from pydantic import BaseModel, Field
 
 app = FastAPI()
+
+
+class UserSchema(BaseModel):
+    full_name: str
+    telegram_id: int = Field(ge=0)
 
 
 @app.get("/user/{telegram_id}")
@@ -12,8 +18,8 @@ def get_user_by_telegram_id(telegram_id: int):
 
 
 @app.post("/user/register/{telegram_id}")
-def register_user(telegram_id: int, full_name: str):
-    return {"registration": database_user.register_user(telegram_id, full_name)}
+def register_user(user: UserSchema):
+    return {"registration": database_user.register_user(user.telegram_id, user.full_name)}
 
 
 @app.get("/lunch")
