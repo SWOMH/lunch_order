@@ -1,15 +1,11 @@
 from typing import Union
 from fastapi import FastAPI
+from custom_types import UserSchema
 from database.bloc import *
 from database.dish_list import dishes
-from pydantic import BaseModel, Field
+
 
 app = FastAPI()
-
-
-class UserSchema(BaseModel):
-    full_name: str
-    telegram_id: int = Field(ge=0)
 
 
 @app.get("/user/{telegram_id}")
