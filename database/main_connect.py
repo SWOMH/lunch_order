@@ -21,7 +21,4 @@ class DataBaseMainConnect(DatabaseCore):
                 raise ValueError("One or more environment variables are not set.")
             url_con = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
 
-
-
-
         super().__init__(str(url_con), create_tables=True)
