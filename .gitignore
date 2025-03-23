@@ -7,6 +7,9 @@ dish_list.py
 # C extensions
 *.so
 
+#File
+constant.py
+
 # Distribution / packaging
 .Python
 build/
