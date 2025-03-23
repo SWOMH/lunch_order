@@ -18,6 +18,8 @@ class Dish(Base):
     image: Mapped[str]  # Картинка блюда
     type: Mapped[str] = mapped_column(nullable=False)  # Тип блюда
     stop_list: Mapped[bool] = mapped_column(default=False)  # На стопе ли блюдо?
+    is_combo: Mapped[bool] = mapped_column(default=False, nullable=False)  # Это комбо?
+    additives: Mapped[bool] = mapped_column(default=False, nullable=False)  # Есть ли добавки к блюду
 
 
 class DishVariant(Base):
@@ -37,6 +39,7 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(nullable=False)  # Полное имя пользователя
     is_support: Mapped[bool] = mapped_column(default=False)  # Является ли пользователь поддержкой
     is_admin: Mapped[bool] = mapped_column(default=False)  # Является ли пользователь администратором
+    banned: Mapped[bool] = mapped_column(default=False)  # Забанен ли пользователь
 
 
 class Order(Base):
