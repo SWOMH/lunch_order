@@ -34,6 +34,8 @@ def get_lunch():
             for dish_id, dish_data in dishes.items()
         ]
     }
+
+
     # dishes = db.get_all_dishes_with_variants()
     # print(dishes)
     # return {"dishes": [{"id": dish.id, "name": dish.name, "description": dish.description} for dish in dishes]}
