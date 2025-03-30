@@ -15,7 +15,8 @@ class DataBaseDish(DataBaseMainConnect):
             query_result = await session.execute(query)
             result = {}
             for dish, variant in query_result:
-                if dish.id not in result:
+                # if dish.available:
+                if dish.id not in result and dish.available:
                     result[dish.id] = {
                         "_id": dish._id,
                         "dish_name": dish.dish_name,
@@ -48,7 +49,8 @@ class DataBaseDish(DataBaseMainConnect):
                         _id = str(uuid.uuid4()),
                         dish_name=dish_data["dish_name"],
                         description=dish_data.get("description", ""),
-                        available=bool(dish_data.get("available", True)),
+                        # available=bool(dish_data.get("available", True)),
+                        available=True,
                         price=dish_data.get("price") if dish_data.get("price") != '' else None,
                         image=dish_data.get("image", ""),
                         type=dish_data.get("type", ""),
