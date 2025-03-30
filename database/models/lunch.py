@@ -20,7 +20,7 @@ class Dish(Base):
     type: Mapped[str] = mapped_column(nullable=False)  # Тип блюда
     stop_list: Mapped[bool] = mapped_column(default=False)  # На стопе ли блюдо?
     is_combo: Mapped[bool] = mapped_column(default=False, nullable=False)  # Это комбо?
-    additives: Mapped[bool] = mapped_column(default=False, nullable=False)  # Есть ли добавки к блюду
+    additives: Mapped[bool] = mapped_column(default=False, nullable=False)  # Есть ли добавки/вариации блюда
 
     dish_variants = relationship("DishVariant", back_populates='dish')
 
