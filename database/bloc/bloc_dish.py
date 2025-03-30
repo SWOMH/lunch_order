@@ -21,6 +21,7 @@ class DataBaseDish(DataBaseMainConnect):
                         "_id": dish._id,
                         "dish_name": dish.dish_name,
                         "description": dish.description,
+                        "image": dish.image if dish.image else None,
                         "available": dish.available,
                         "stop_list": dish.stop_list,
                         "additives": dish.additives,

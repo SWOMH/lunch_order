@@ -28,6 +28,7 @@ async def get_lunch():
                 "_id": dish_data["_id"],
                 "name": dish_data["dish_name"],
                 "description": dish_data["description"],
+                "image": dish_data["image"],
                 "available": dish_data["available"],
                 "stop_list": dish_data["stop_list"],
                 "variants": dish_data["variants"],
