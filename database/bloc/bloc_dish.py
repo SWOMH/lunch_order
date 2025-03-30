@@ -7,20 +7,22 @@ import uuid
 class DataBaseDish(DataBaseMainConnect):
 
     async def get_all_dishes_with_variants(self):
-        async with self.Session as session:
+        async with self.Session() as session:
             query = (
                 select(Dish, DishVariant)
                 .outerjoin(DishVariant, Dish.id == DishVariant.dish_id)
-                .all()
             )
+            query_result = await session.execute(query)
             result = {}
-            for dish, variant in query:
+            for dish, variant in query_result:
                 if dish.id not in result:
                     result[dish.id] = {
+                        "_id": dish._id,
                         "dish_name": dish.dish_name,
                         "description": dish.description,
                         "available": dish.available,
                         "stop_list": dish.stop_list,
+                        "additives": dish.additives,
                         "variants": []
                     }
                 if variant:
