@@ -1,6 +1,5 @@
-from typing import Union
-from fastapi import FastAPI
-from custom_types import UserSchema
+from fastapi import FastAPI, HTTPException
+from custom_types import OrderType, UserSchema
 from database.bloc import *
 from database.dish_list import dishes
 
@@ -39,13 +38,19 @@ async def get_lunch():
     }
 
 
-    # dishes = db.get_all_dishes_with_variants()
-    # print(dishes)
-    # return {"dishes": [{"id": dish.id, "name": dish.name, "description": dish.description} for dish in dishes]}
-
 @app.post("/ordering_food")
-def ordering_food(foods: list[int], telegram_id: int):
-    return {"order_details": ordering_food(foods, telegram_id)}
+def ordering_food(order: OrderType):
+    db_order = DatabaseOrder()
+    try:
+        result = db_order.ordering_food(order)
+        return {"status": "success", "data": result}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ошибка при создании заказа: {str(e)}"
+        )
 
 @app.get("/adding_dish")
 async def add_dishes_list():
