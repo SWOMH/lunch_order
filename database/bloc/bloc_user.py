@@ -13,7 +13,7 @@ class DatabaseUser(DataBaseMainConnect):
         return [{"id": u.id, "name": u.full_name, "banned": u.banned} for u in result.scalars()]
 
     @connection
-    async def get_user(self, id: int, session: AsyncSession) -> str:
+    async def get_user(self, id: int, session: AsyncSession) -> dict:
         user = await session.scalar(select(User).filter_by(telegram_id=id))
         if not user:
             raise HTTPException(status_code=404, detail="Пользователь не найден")
