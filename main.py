@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from custom_types import OrderType, UserSchema
+from custom_types import OrderType, TelegramId, UserSchema
 from database.bloc import *
 from database.dish_list import dishes
 
@@ -7,14 +7,14 @@ from database.dish_list import dishes
 app = FastAPI()
 
 
-@app.get("/user/{telegram_id}")
-async def get_user_by_telegram_id(telegram_id: int):
-    return await database_user.get_user(telegram_id)
+@app.post("/user")
+async def get_user_by_telegram_id(telegram_id: TelegramId):
+    return await database_user.get_user(telegram_id.telegram_id)
 
 
-@app.get("/get_users")
-async def get_all_users(telegram_id: int):
-    if await database_user.get_user_permission(telegram_id):
+@app.post("/get_users")
+async def get_all_users(telegram_id: TelegramId):
+    if await database_user.get_user_permission(telegram_id.telegram_id):
         return await database_user.get_all_users()
     else:
         return {"status": "bad",

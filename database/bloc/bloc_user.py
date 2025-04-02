@@ -18,23 +18,28 @@ class DatabaseUser(DataBaseMainConnect):
             return False # Потом исправлю, если неправильно написал, да и вообще нужно все стандартизировать
 
     @connection
-    async def get_all_users(self, session: AsyncSession) -> list:
+    async def get_all_users(self, session: AsyncSession) -> dict:
         result = await session.execute(select(User))
-        return [{"id": u.id, "name": u.full_name, "banned": u.banned} for u in result.scalars()]
+        return {"status": "ok",
+                "users": [{"id": u.id, "name": u.full_name, "banned": u.banned} for u in result.scalars()]}
 
     @connection
     async def get_user(self, id: int, session: AsyncSession) -> dict:
         user = await session.scalar(select(User).filter_by(telegram_id=id))
         if not user:
-            raise HTTPException(status_code=404, detail="Пользователь не найден")
+            raise HTTPException(status_code=404, detail="Пользователь не найден")        
         return {"user": {
             "id": user.id,
-            "user_name": user.full_name
+            "telegram_user_name": user.telegram_username,
+            "telegram_name": user.telegram_name,
+            "full_name": user.full_name,
+            "ban": user.banned,
+            "admin": user.is_admin
         }}
     
 
     @connection
-    async def register_user(self, id: int, full_name: str, session: AsyncSession):        
+    async def register_user(self, id: int, full_name: str, session: AsyncSession) -> dict:
         query = select(User).filter_by(telegram_id=id)
         user = await session.execute(query)
         existing_user = user.scalar_one_or_none()
