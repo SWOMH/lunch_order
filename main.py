@@ -12,6 +12,12 @@ async def get_user_by_telegram_id(telegram_id: int):
     return await database_user.get_user(telegram_id)
 
 
+@app.get("/get_users")
+async def get_all_users(telegram_id: int):
+    ...
+    return await database_user.get_all_users()
+
+
 @app.post("/user/register/{telegram_id}")
 async def register_user(user: UserSchema):
     res = await database_user.register_user(user.telegram_id, user.full_name)
