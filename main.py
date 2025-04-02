@@ -13,8 +13,9 @@ def get_user_by_telegram_id(telegram_id: int):
 
 
 @app.post("/user/register/{telegram_id}")
-def register_user(user: UserSchema):
-    return {"registration": database_user.register_user(user.telegram_id, user.full_name)}
+async def register_user(user: UserSchema):
+    await database_user.register_user(user.telegram_id, user.full_name)
+    return {"registration": 'good'}
 
 
 @app.get("/lunch")
