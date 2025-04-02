@@ -8,6 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 class DatabaseUser(DataBaseMainConnect):
 
     @connection
+    async def get_all_users(self, session: AsyncSession) -> list:
+        result = await session.execute(select(User))
+        return [{"id": u.id, "name": u.full_name, "banned": u.banned} for u in result.scalars()]
+
+    @connection
     async def get_user(self, id: int, session: AsyncSession) -> str:
         user = await session.scalar(select(User).filter_by(telegram_id=id))
         if not user:
