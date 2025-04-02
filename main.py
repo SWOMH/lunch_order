@@ -14,8 +14,11 @@ async def get_user_by_telegram_id(telegram_id: int):
 
 @app.get("/get_users")
 async def get_all_users(telegram_id: int):
-    ...
-    return await database_user.get_all_users()
+    if await database_user.get_user_permission(telegram_id):
+        return await database_user.get_all_users()
+    else:
+        return {"status": "bad",
+                "details": "permission denied"}
 
 
 @app.post("/user/register/{telegram_id}")

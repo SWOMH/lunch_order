@@ -8,6 +8,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 class DatabaseUser(DataBaseMainConnect):
 
     @connection
+    async def get_user_permission(self, id: int, session: AsyncSession) -> dict:
+        user = await session.scalar(select(User).filter_by(telegram_id=id))
+        if not user:
+            raise HTTPException(status_code=404, detail="Пользователь не найден")
+        if user.is_admin and not user.banned:
+            return True
+        else:
+            return False # Потом исправлю, если неправильно написал, да и вообще нужно все стандартизировать
+
+    @connection
     async def get_all_users(self, session: AsyncSession) -> list:
         result = await session.execute(select(User))
         return [{"id": u.id, "name": u.full_name, "banned": u.banned} for u in result.scalars()]
