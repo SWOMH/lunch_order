@@ -8,8 +8,8 @@ app = FastAPI()
 
 
 @app.get("/user/{telegram_id}")
-def get_user_by_telegram_id(telegram_id: int):
-    return {"full_name": database_user.get_user(telegram_id)}
+async def get_user_by_telegram_id(telegram_id: int):
+    return await database_user.get_user(telegram_id)
 
 
 @app.post("/user/register/{telegram_id}")

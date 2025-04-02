@@ -7,13 +7,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class DatabaseUser(DataBaseMainConnect):
 
-    def get_user(self, id: int) -> str:
-        session = self.Session()
-        with session:
-            user = session.query(User).filter_by(telegram_id=id).first()
-            if not user:
-                raise HTTPException(status_code=404, detail="Пользователь не найден")
-            return user.full_name
+    @connection
+    async def get_user(self, id: int, session: AsyncSession) -> str:
+        user = await session.scalar(select(User).filter_by(telegram_id=id))
+        if not user:
+            raise HTTPException(status_code=404, detail="Пользователь не найден")
+        return {"user": {
+            "id": user.id,
+            "user_name": user.full_name
+        }}
+    
 
     @connection
     async def register_user(self, id: int, full_name: str, session: AsyncSession):        
