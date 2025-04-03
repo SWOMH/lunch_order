@@ -18,7 +18,7 @@ async def get_all_users(telegram_id: TelegramId):
         return await database_user.get_all_users()
     else:
         return {"status": "bad",
-                "details": "permission denied"}
+                "detail": "permission denied"}
 
 
 @app.post("/user/register/{telegram_id}")
@@ -31,6 +31,7 @@ async def register_user(user: UserSchema):
 async def get_lunch():
     dishes = await database_dish.get_all_dishes_with_variants()
     return {
+        "status": "ok",
         "dishes": [
             {
                 "id": dish_id,
@@ -53,7 +54,7 @@ def ordering_food(order: OrderType):
     db_order = DatabaseOrder()
     try:
         result = db_order.ordering_food(order)
-        return {"status": "success", "data": result}
+        return {"status": "ok", "data": result}
     except HTTPException as e:
         raise e
     except Exception as e:
