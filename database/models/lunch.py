@@ -1,9 +1,18 @@
 from sqlalchemy import ForeignKey, text, Integer, DateTime, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import ENUM as PgEnum
+from enum import Enum
 from typing import Annotated
 from ..base import Base
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
+
+class OrderStatus(str, Enum): #отслеживать статус доставки просто невозможно, кроме того, как проставлять вручную
+    formalized = "Оформлено"
+    completed = "Выполнено"
+    canceled = "Отменено"
+    deleted = "Удалено"
+    unknown = "Неизвестно"
 
 # TABLE REVENUE =============================================>
 
@@ -55,6 +64,13 @@ class Order(Base):
     id = mapped_column(Integer, primary_key=True)
     user_id = mapped_column(Integer, ForeignKey('public.users.id', ondelete='CASCADE'), nullable=False)
     datetime = mapped_column(DateTime, server_default=text("TIMEZONE('utc', now())"), nullable=False)
+    amount = mapped_column(Float, nullable=False)
+    order_status = mapped_column(
+        PgEnum(OrderStatus, name='order_status_enum', create_constraint=True),
+        nullable=False,
+        default=OrderStatus.formalized,
+        server_default=OrderStatus.formalized.value
+    )
 
     user = relationship("User", back_populates="order")
     order_items = relationship("OrderItem", back_populates='order', cascade='all, delete-orphan')
