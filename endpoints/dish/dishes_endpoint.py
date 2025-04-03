@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from database.bloc import database_dish
-
+from database.dish_list import dishes
 
 router = APIRouter(
     prefix='/dish'
@@ -27,3 +27,9 @@ async def get_lunch():
             for dish_id, dish_data in dishes.items()
         ]
     }
+
+
+@router.get("/adding_dish")
+async def add_dishes_list():
+    await database_dish.add_dishes_to_db(dishes)
+    return {"message": "Все загружено в БД"}
