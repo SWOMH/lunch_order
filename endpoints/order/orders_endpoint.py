@@ -7,7 +7,7 @@ router = APIRouter(
     )
 
 
-@router.post("/ordering_food")
+@router.post("", tags=["order"])
 def ordering_food(order: OrderType):
     try:
         result = database_order.ordering_food(order)

@@ -29,7 +29,7 @@ async def get_lunch():
     }
 
 
-@router.get("/adding_dish")
+@router.get("/adding_dish", tags=["dish"])
 async def add_dishes_list():
     await database_dish.add_dishes_to_db(dishes)
     return {"message": "Все загружено в БД"}

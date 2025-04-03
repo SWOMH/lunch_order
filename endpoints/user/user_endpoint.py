@@ -22,7 +22,7 @@ async def get_all_users(telegram_id: TelegramId):
                 "detail": "permission denied"}
 
 
-@router.post("/register/{telegram_id}", tags=["user"])
+@router.post("/register", tags=["user"])
 async def register_user(user: UserSchema):
     res = await database_user.register_user(user.telegram_id, user.full_name)
     return res
