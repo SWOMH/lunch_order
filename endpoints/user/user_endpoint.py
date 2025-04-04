@@ -26,3 +26,9 @@ async def get_all_users(telegram_id: TelegramId):
 async def register_user(user: UserSchema):
     res = await database_user.register_user(user.telegram_id, user.full_name)
     return res
+
+
+@router.post("/orders", tags=["user"])
+async def get_user_orders(telegram_id: TelegramId):
+    res = await database_user.get_user_orders(telegram_id)
+    return res
