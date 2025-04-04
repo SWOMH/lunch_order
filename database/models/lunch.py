@@ -82,7 +82,7 @@ class OrderItem(Base):
     order_id = mapped_column(Integer, ForeignKey('public.orders.id', ondelete='CASCADE'), nullable=False)
     dish_id = mapped_column(Integer, ForeignKey('public.dish.id', ondelete='CASCADE'), nullable=False)
     count = mapped_column(Integer, default=1)
-    variant_id = mapped_column(Integer, nullable=True)
+    variant_id = mapped_column(Integer, ForeignKey('public.dish_variants.id'), nullable=True)
 
     order = relationship("Order", back_populates='order_items')
 
