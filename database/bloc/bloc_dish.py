@@ -2,7 +2,6 @@ from database.decorators import connection
 from database.main_connect import DataBaseMainConnect
 from database.models.lunch import DishVariant, Dish
 from sqlalchemy.future import select
-from sqlalchemy.orm import joinedload
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 

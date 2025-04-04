@@ -86,3 +86,6 @@ class OrderItem(Base):
 
     order = relationship("Order", back_populates='order_items')
 
+    dish = relationship("Dish")
+    variant = relationship("DishVariant")
+
