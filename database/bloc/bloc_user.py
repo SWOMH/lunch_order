@@ -107,8 +107,6 @@ class DatabaseUser(DataBaseMainConnect):
                 order_data["items"].append(item_data)
             
             result.append(order_data)
-        if len(result) == 0:            
-            return {"status": "success", "orders": "There are no orders for today"}
         return {"status": "success", "orders": result}
 
 
