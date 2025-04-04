@@ -10,14 +10,14 @@ class UserSchema(TelegramId):
 class DishOrder(BaseModel):
     dish_id: int = Field(gt=0, description="ID блюда в меню")
     count: int = Field(gt=0, description="Количество единиц блюда")
-    variant_id: Optional[int] = Field(
+    variant_id: Optional[int | None] = Field(
         None, gt=0, description="ID варианта блюда (например, размер или добавка)"
     )
 
 
 class OrderType(TelegramId):
     dishes: list[DishOrder] = Field(description="Список заказанных блюд")
-    amount: float = Field(
-        ge=0, description="Общая сумма заказа в рублях"
-    )
+    # amount: float = Field(
+    #     ge=0, description="Общая сумма заказа в рублях"
+    # )
 

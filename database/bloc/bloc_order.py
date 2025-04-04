@@ -3,7 +3,7 @@ from sqlalchemy import select
 from custom_types import OrderType
 from database.decorators import connection
 from database.main_connect import DataBaseMainConnect
-from database.models.lunch import Dish, User, Order, OrderItem
+from database.models.lunch import Dish, User, Order, OrderItem, OrderStatus
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -34,10 +34,12 @@ class DatabaseOrder(DataBaseMainConnect):
             not_found = [id_ for id_ in dish_ids if id_ not in found_ids]
             raise HTTPException(
                 status_code=400,
+                status="bad",
                 detail=f"Некоторые блюда не найдены: {not_found}"
             )
-        
-        new_order = Order(user_id=user.id, amount=order.amount)
+        amount = sum(dish.price * item.count for dish, item in zip(dishes, order.dishes))
+    
+        new_order = Order(user_id=user.id, amount=amount)
         session.add(new_order)
         await session.flush()
 
@@ -46,7 +48,7 @@ class DatabaseOrder(DataBaseMainConnect):
                 order_id=new_order.id,
                 dish_id=item.dish_id,
                 count=item.count,
-                variant_id=item.variant_id
+                variant_id=item.variant_id if item.variant_id else None
             )
             for item in order.dishes
         ]

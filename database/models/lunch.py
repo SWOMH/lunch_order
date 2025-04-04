@@ -8,11 +8,11 @@ from ..base import Base
 intpk = Annotated[int, mapped_column(primary_key=True)]
 
 class OrderStatus(str, Enum): #отслеживать статус доставки просто невозможно, кроме того, как проставлять вручную
-    formalized = "Оформлено"
-    completed = "Выполнено"
-    canceled = "Отменено"
-    deleted = "Удалено"
-    unknown = "Неизвестно"
+    formalized = "formalized"
+    completed = "completed"
+    canceled = "canceled"
+    deleted = "deleted"
+    unknown = "unknown"
 
 # TABLE REVENUE =============================================>
 
@@ -68,8 +68,7 @@ class Order(Base):
     order_status = mapped_column(
         PgEnum(OrderStatus, name='order_status_enum', create_constraint=True),
         nullable=False,
-        default=OrderStatus.formalized,
-        server_default=OrderStatus.formalized.value
+        server_default=OrderStatus.formalized
     )
 
     user = relationship("User", back_populates="order")
@@ -82,7 +81,8 @@ class OrderItem(Base):
     id = mapped_column(Integer, primary_key=True)
     order_id = mapped_column(Integer, ForeignKey('public.orders.id', ondelete='CASCADE'), nullable=False)
     dish_id = mapped_column(Integer, ForeignKey('public.dish.id', ondelete='CASCADE'), nullable=False)
-    quantity = mapped_column(Integer, default=1)
+    count = mapped_column(Integer, default=1)
+    variant_id = mapped_column(Integer, nullable=True)
 
     order = relationship("Order", back_populates='order_items')
 
