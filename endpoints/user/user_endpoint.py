@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from database.bloc import database_user
 from custom_types import TelegramId, UserSchema
 
@@ -8,9 +8,9 @@ router = APIRouter(
 )
 
 
-@router.post("", tags=["user"])
-async def get_user_by_telegram_id(telegram_id: TelegramId):
-    return await database_user.get_user(telegram_id.telegram_id)
+@router.get("", tags=["user"])
+async def get_user_by_telegram_id(telegram_id: int = Query(..., gt=0, description="ID пользователя в Telegram")):
+    return await database_user.get_user(telegram_id)
 
 
 @router.post("/get_users", tags=["user"])
@@ -28,7 +28,12 @@ async def register_user(user: UserSchema):
     return res
 
 
-@router.post("/orders", tags=["user"])
-async def get_user_orders(telegram_id: TelegramId):
-    res = await database_user.get_user_orders(telegram_id)
+@router.get("/orders", tags=["user"])
+async def get_user_orders(telegram_id: int = Query(..., gt=0, description="ID пользователя в Telegram")):
+    res = await database_user.get_user_orders_and_actual(telegram_id)
+    return res
+
+@router.get("/orders/actual", tags=["user"])
+async def get_user_orders_actual(telegram_id: int = Query(..., gt=0, description="ID пользователя в Telegram")):
+    res = await database_user.get_user_orders_and_actual(telegram_id, actual_orders=True)
     return res

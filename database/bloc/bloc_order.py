@@ -103,7 +103,6 @@ class DatabaseOrder(DataBaseMainConnect):
             )
         
         today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-        print(f"Сегодня (UTC): {today_start}")
         orders = await session.execute(
             select(Order)
             .where(Order.datetime >= today_start)

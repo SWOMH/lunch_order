@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from custom_types import TelegramId
+from datetime import datetime
 from database.main_connect import DataBaseMainConnect
 from database.models.lunch import User, Dish, Order, OrderItem, DishVariant
 from database.decorators import connection
@@ -56,26 +57,38 @@ class DatabaseUser(DataBaseMainConnect):
                 "full_name": full_name}
     
     @connection
-    async def get_user_orders(self, telegram_id: TelegramId, session: AsyncSession):
+    async def get_user_orders_and_actual(self, telegram_id: int, session: AsyncSession, actual_orders: bool = None):
         user = await session.scalar(
-            select(User).where(User.telegram_id == telegram_id.telegram_id))
+            select(User).where(User.telegram_id == telegram_id))
         
         if not user:
             raise HTTPException(
                 status_code=403,
                 detail="User not found"
             )
-        
-        orders = await session.execute(
-            select(Order)
-            .where(Order.user_id == user.id)
-            .options(
-                selectinload(Order.user),
-                selectinload(Order.order_items).selectinload(OrderItem.dish),
-                selectinload(Order.order_items).selectinload(OrderItem.variant)
+        if actual_orders:
+            today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            orders = await session.execute(
+                select(Order)
+                .where(Order.datetime >= today_start, Order.user_id == user.id)
+                .options(
+                    selectinload(Order.user),
+                    selectinload(Order.order_items).selectinload(OrderItem.dish),
+                    selectinload(Order.order_items).selectinload(OrderItem.variant)
+                )
+                .order_by(Order.datetime.desc())
             )
-            .order_by(Order.datetime.desc())
-        )
+        else:
+            orders = await session.execute(
+                select(Order)
+                .where(Order.user_id == user.id)
+                .options(
+                    selectinload(Order.user),
+                    selectinload(Order.order_items).selectinload(OrderItem.dish),
+                    selectinload(Order.order_items).selectinload(OrderItem.variant)
+                )
+                .order_by(Order.datetime.desc())
+            )
         orders = orders.scalars().all()
         
         result = []
@@ -107,9 +120,12 @@ class DatabaseUser(DataBaseMainConnect):
                 order_data["items"].append(item_data)
             
             result.append(order_data)
+
+        if len(result) == 0 and actual_orders:
+            return {"status": "ok", "orders": "You didn't order anything today"}
+        if len(result) == 0:
+            return {"status": "ok", "orders": "You didn't order anything"}
         return {"status": "success", "orders": result}
-
-
 
 
 
