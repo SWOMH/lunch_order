@@ -128,6 +128,20 @@ class DatabaseUser(DataBaseMainConnect):
         return {"status": "success", "orders": result}
 
 
+    @connection
+    async def edit_user_status(telegram_id_user: int, session: AsyncSession):
+        user = await session.scalar(
+            select(User).where(User.telegram_id == telegram_id_user))
+        if user.banned:
+            user.banned = False
+        else:
+            user.banned = True
+        await session.commit()
+        return {"status": "ok",
+                "message": f"У {user.full_name} изменен статус на {user.banned}"}
+
+        
+
 
 
 

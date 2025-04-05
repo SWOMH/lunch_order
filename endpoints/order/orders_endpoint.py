@@ -33,3 +33,5 @@ async def get_actual_orders(telegram_id: TelegramId):
             detail=f"Ошибка: {str(e)}"
         )
     
+
+# Нужно изменения статуса заказа

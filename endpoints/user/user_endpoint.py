@@ -37,3 +37,13 @@ async def get_user_orders(telegram_id: int = Query(..., gt=0, description="ID п
 async def get_user_orders_actual(telegram_id: int = Query(..., gt=0, description="ID пользователя в Telegram")):
     res = await database_user.get_user_orders_and_actual(telegram_id, actual_orders=True)
     return res
+
+
+@router.post("/edit_status", tags=['user'])
+async def edit_user_status(telegram_id_admin: int = Query(..., gt=0, description="ID администратора в Telegram"),
+                           telegram_id_user: int = Query(..., gt=0, description="ID пользователя в Telegram")):
+    if await database_user.get_user_permission(telegram_id_admin):
+        return await database_user.edit_user_status(telegram_id_user)
+    else:
+        return {"status": "bad",
+                "detail": "permission denied"}

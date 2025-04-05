@@ -1,3 +1,4 @@
+from custom_types import DishType
 from database.decorators import connection
 from database.main_connect import DataBaseMainConnect
 from database.models.lunch import DishVariant, Dish
@@ -78,7 +79,7 @@ class DataBaseDish(DataBaseMainConnect):
         await session.commit()
 
     @connection
-    async def add_dish(self, dish_data, session: AsyncSession):
+    async def add_dish(self, dish_data: DishType, session: AsyncSession):
         query = select(Dish).filter_by(dish_name=dish_data.dish_name)
         result = await session.execute(query)
         existing_dish = result.scalar_one_or_none()
