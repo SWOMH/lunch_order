@@ -5,7 +5,10 @@ class TelegramId(BaseModel):
     telegram_id: int = Field(ge=0, description="ID пользователя в Telegram")  # Не до конца уверен, что в телеге id не с - идут. Потом проверю
 
 class UserSchema(TelegramId):
-    full_name: str = Field(max_length=100)    
+    full_name: str = Field(max_length=150)
+    telegram_name: str | None = Field(max_length=100, description="Имя в телеграме")
+    telegram_username: str | None = Field(max_length=100, description="Ник в телеграме, который указывается через @")
+
 
 class DishOrder(BaseModel):
     dish_id: int = Field(gt=0, description="ID блюда в меню")
@@ -22,7 +25,7 @@ class OrderType(TelegramId):
     # )
 
 class VariantType(BaseModel):
-    dish_id: int = Field(..., gt=0, description="ID блюда (положительное число)")
+    dish_id: int | None = Field(None, description="ID блюда (положительное число)")
     size: str = Field(..., min_length=1, max_length=50, 
                      description="Размер/вариант блюда (например, 'Маленький', 'Большой' или 'С креветками', 'С курицей')")
     price: float = Field(..., gt=0, description="Цена для этого варианта (положительное число)")
@@ -38,7 +41,7 @@ class DishType(BaseModel):
     description: str | None = Field(None, max_length=500, description="Описание")
     price: float | None = Field(gt=0, description="Базовая цена (неотрицательное число)")
     available: bool = Field(True, description="Доступно для заказа")
-    image: HttpUrl | None = Field(None, description="URL картинки блюда")
+    image: str | None = Field(None, description="URL картинки блюда")
     type: Literal['Соус', 'Закуски', 'Лапша/паста', 'Основные блюда',
                   'Гарниры', 'Первые блюда', 'Салаты', 'Римские пиццы',
                   'Пицца', 'Роллы горячие', 'Роллы холодные', 'Сет',

@@ -4,6 +4,7 @@ from database.models.lunch import DishVariant, Dish
 from sqlalchemy.future import select
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException
 
 class DataBaseDish(DataBaseMainConnect):
 
@@ -37,14 +38,12 @@ class DataBaseDish(DataBaseMainConnect):
         return result
 
     @connection
-    async def add_dishes_to_db(self, dishes: list, session: AsyncSession):        
+    async def add_dishes_to_db(self, dishes: list, session: AsyncSession):
         for dish_data in dishes:
-            # Создаем или находим запись для блюда
             query = select(Dish).filter_by(dish_name=dish_data["dish_name"])
             result = await session.execute(query)
             dish = result.scalar_one_or_none()
             
-            # Если есть варианты, добавляем их на 59 строке
             variants = dish_data.get("variants", [])
             if not dish:
                 dish = Dish(
@@ -61,7 +60,7 @@ class DataBaseDish(DataBaseMainConnect):
                     additives= True if variants else False,
                 )
                 session.add(dish)
-                await session.flush()  # Сохраняем, чтобы получить ID блюда
+                await session.flush()
 
             
             for variant_data in variants:
@@ -69,7 +68,6 @@ class DataBaseDish(DataBaseMainConnect):
                 price = variant_data.get("price")
 
                 if size and price:
-                    # Проверяем, есть ли уже такой вариант для блюда
                     query = select(DishVariant).filter_by(dish_id=dish.id, size=size)
                     result = await session.execute(query)
                     variant = result.scalar_one_or_none()
@@ -77,4 +75,156 @@ class DataBaseDish(DataBaseMainConnect):
                     if not variant:
                         variant = DishVariant(dish_id=dish.id, size=size, price=price)
                         session.add(variant)    
-        await session.commit()  # Сохраняем изменения
+        await session.commit()
+
+    @connection
+    async def add_dish(self, dish_data, session: AsyncSession):
+        query = select(Dish).filter_by(dish_name=dish_data.dish_name)
+        result = await session.execute(query)
+        existing_dish = result.scalar_one_or_none()
+        
+        if existing_dish:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Блюдо с названием '{dish_data.dish_name}' уже существует"
+            )
+        
+        new_dish = Dish(
+            _id=str(uuid.uuid4()),
+            dish_name=dish_data.dish_name,
+            description=dish_data.description,
+            price=dish_data.price,
+            available=dish_data.available,
+            image=str(dish_data.image) if dish_data.image else None,
+            type=dish_data.type,
+            stop_list=dish_data.stop_list,
+            is_combo=dish_data.is_combo,
+            additives=len(dish_data.variants) > 0
+        )
+        
+        session.add(new_dish)
+        await session.flush()
+        
+        if dish_data.variants:
+            for variant_data in dish_data.variants:
+                variant = DishVariant(
+                    dish_id=new_dish.id,
+                    size=variant_data.size,
+                    price=variant_data.price
+                )
+                session.add(variant)
+        
+        await session.commit()
+        
+        return {
+            "status": "success",
+            "dish_id": new_dish.id,
+            "message": f"Блюдо '{new_dish.dish_name}' успешно добавлено"
+        }
+    
+    @connection
+    async def update_dish(self, dish_id: int, dish_data, session: AsyncSession):
+        query = select(Dish).filter_by(id=dish_id)
+        result = await session.execute(query)
+        dish = result.scalar_one_or_none()
+        
+        if not dish:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Блюдо с ID {dish_id} не найдено"
+            )
+        
+        if dish_data.dish_name is not None:
+            dish.dish_name = dish_data.dish_name
+        if dish_data.description is not None:
+            dish.description = dish_data.description
+        if dish_data.price is not None:
+            dish.price = dish_data.price
+        if dish_data.available is not None:
+            dish.available = dish_data.available
+        if dish_data.image is not None:
+            dish.image = str(dish_data.image)
+        if dish_data.type is not None:
+            dish.type = dish_data.type
+        if dish_data.stop_list is not None:
+            dish.stop_list = dish_data.stop_list
+        if dish_data.is_combo is not None:
+            dish.is_combo = dish_data.is_combo
+        
+        if dish_data.variants is not None:
+            query = select(DishVariant).filter_by(dish_id=dish_id)
+            result = await session.execute(query)
+            current_variants = result.scalars().all()
+            
+            variants_to_keep = set()
+            
+            for variant_data in dish_data.variants:
+                existing_variant = None
+                for var in current_variants:
+                    if var.size == variant_data.size:
+                        existing_variant = var
+                        break
+                
+                if existing_variant:
+                    existing_variant.price = variant_data.price
+                    variants_to_keep.add(existing_variant.id)
+                else:
+                    new_variant = DishVariant(
+                        dish_id=dish_id,
+                        size=variant_data.size,
+                        price=variant_data.price
+                    )
+                    session.add(new_variant)
+            
+            for var in current_variants:
+                if var.id not in variants_to_keep:
+                    await session.delete(var)
+            
+            dish.additives = len(dish_data.variants) > 0
+        
+        await session.commit()
+        
+        return {
+            "status": "success",
+            "message": f"Блюдо '{dish.dish_name}' успешно обновлено"
+        }
+
+    @connection
+    async def get_dish_by_id(self, dish_id: int, session: AsyncSession):
+        query = select(Dish).filter_by(id=dish_id)
+        result = await session.execute(query)
+        dish = result.scalar_one_or_none()
+        
+        if not dish:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Блюдо с ID {dish_id} не найдено"
+            )
+        
+        query = select(DishVariant).filter_by(dish_id=dish_id)
+        result = await session.execute(query)
+        variants = result.scalars().all()
+        
+        dish_data = {
+            "id": dish.id,
+            "_id": dish._id,
+            "dish_name": dish.dish_name,
+            "description": dish.description,
+            "price": dish.price,
+            "available": dish.available,
+            "image": dish.image,
+            "type": dish.type,
+            "stop_list": dish.stop_list,
+            "is_combo": dish.is_combo,
+            "additives": dish.additives,
+            "variants": [
+                {
+                    "id": variant.id,
+                    "size": variant.size,
+                    "price": variant.price
+                }
+                for variant in variants
+            ]
+        }
+        
+        return dish_data
