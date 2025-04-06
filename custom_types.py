@@ -57,3 +57,9 @@ class DishType(BaseModel):
         if not v.strip():
             raise ValueError("Название блюда не может быть пустым")
         return v.strip()
+    
+class EditStatusOrderType(TelegramId):
+    order_id: int = Field(..., description="id заказа")
+    new_status: Literal["formalized", "completed", 
+                        "canceled", "deleted", "unknown"] = Field(description="Новый тип заказа")
+    

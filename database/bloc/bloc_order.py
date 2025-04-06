@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import Literal
 from fastapi import HTTPException
 from sqlalchemy import select, tuple_
 from custom_types import OrderType, TelegramId
@@ -147,3 +148,14 @@ class DatabaseOrder(DataBaseMainConnect):
         if len(result) == 0:            
             return {"status": "success", "orders": "There are no orders for today"}
         return {"status": "success", "orders": result}
+
+
+    @connection
+    async def edit_order_status(self, order_id: int, status: Literal["formalized", "completed", 
+                        "canceled", "deleted", "unknown"], session: AsyncSession):        
+        order = await session.execute(
+            select(Order)
+            .where(Order.id >= order_id))
+        order = order.scalars().first()
+        order.order_status = status
+        session.commit()
