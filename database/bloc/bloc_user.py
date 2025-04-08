@@ -34,6 +34,7 @@ class DatabaseUser(DataBaseMainConnect):
             raise HTTPException(status_code=404, detail="Пользователь не найден")        
         return {"user": {
             "id": user.id,
+            "telegram_id": user.telegram_id,
             "telegram_user_name": user.telegram_username,
             "telegram_name": user.telegram_name,
             "full_name": user.full_name,
@@ -57,7 +58,7 @@ class DatabaseUser(DataBaseMainConnect):
                 "full_name": full_name}
     
     @connection
-    async def get_user_orders_and_actual(self, telegram_id: int, session: AsyncSession, actual_orders: bool = None):
+    async def get_user_orders_and_actual(self, telegram_id: int, session: AsyncSession, actual_orders: bool = None) -> dict:
         user = await session.scalar(
             select(User).where(User.telegram_id == telegram_id))
         
@@ -129,7 +130,7 @@ class DatabaseUser(DataBaseMainConnect):
 
 
     @connection
-    async def edit_user_status(self, telegram_id_user: int, session: AsyncSession):
+    async def edit_user_status(self, telegram_id_user: int, session: AsyncSession) -> dict:
         user = await session.scalar(
             select(User).where(User.telegram_id == telegram_id_user))
         

@@ -26,12 +26,15 @@ class DataBaseDish(DataBaseMainConnect):
                     "description": dish.description,
                     "image": dish.image if dish.image else None,
                     "available": dish.available,
+                    "type": dish.type,
                     "stop_list": dish.stop_list,
                     "additives": dish.additives,
+                    "is_combo": dish.is_combo,
                     "variants": []
                 }
             if variant:
                 result[dish.id]["variants"].append({
+                    "id": variant.id,
                     "size": variant.size,
                     "price": variant.price
                 })
