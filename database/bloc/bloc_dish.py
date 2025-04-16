@@ -27,6 +27,7 @@ class DataBaseDish(DataBaseMainConnect):
                     "image": dish.image if dish.image else None,
                     "available": dish.available,
                     "type": dish.type,
+                    "price": dish.price if dish.price else None,
                     "stop_list": dish.stop_list,
                     "additives": dish.additives,
                     "is_combo": dish.is_combo,

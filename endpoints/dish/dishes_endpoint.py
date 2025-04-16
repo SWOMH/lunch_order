@@ -12,7 +12,6 @@ router = APIRouter(
 async def get_lunch():
     dishes = await database_dish.get_all_dishes_with_variants()
     return {
-        "status": "ok",
         "dishes": [
             {
                 "id": dish_id,
@@ -22,6 +21,7 @@ async def get_lunch():
                 "image": dish_data["image"],
                 "available": dish_data["available"],
                 "type": dish_data['type'],
+                "price": dish_data['price'] if dish_data['price'] else None, 
                 "stop_list": dish_data["stop_list"],
                 "is_combo": dish_data["is_combo"],
                 "variants": dish_data["variants"],
