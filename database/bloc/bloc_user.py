@@ -123,10 +123,10 @@ class DatabaseUser(DataBaseMainConnect):
             result.append(order_data)
 
         if len(result) == 0 and actual_orders:
-            return {"status": "ok", "orders": "You didn't order anything today"}
+            return {"orders": "You didn't order anything today"}
         if len(result) == 0:
-            return {"status": "ok", "orders": "You didn't order anything"}
-        return {"status": "success", "orders": result}
+            return {"orders": "You didn't order anything"}
+        return {"orders": result}
 
 
     @connection
