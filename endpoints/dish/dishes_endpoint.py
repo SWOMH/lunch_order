@@ -60,7 +60,7 @@ async def add_dish(dish: DishType):
         )
 
 
-@router.put("/{dish_id}", tags=["dish"])
+@router.put("/update/{dish_id}", tags=["dish"])
 async def update_dish(dish: DishType, dish_id: int = Path(..., gt=0, description="ID блюда")):
     try:
         result = await database_dish.update_dish(dish_id, dish)
