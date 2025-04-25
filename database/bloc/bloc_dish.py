@@ -14,12 +14,45 @@ class DataBaseDish(DataBaseMainConnect):
         query = (
             select(Dish, DishVariant)
             .outerjoin(DishVariant, Dish.id == DishVariant.dish_id)
+            .where(Dish.available == True)
         )
         query_result = await session.execute(query)
         result = {}
         for dish, variant in query_result:
             # if dish.available:
-            if dish.id not in result and dish.available:
+            if dish.id not in result:
+                result[dish.id] = {
+                    "_id": dish._id,
+                    "dish_name": dish.dish_name,
+                    "description": dish.description,
+                    "image": dish.image if dish.image else None,
+                    "available": dish.available,
+                    "type": dish.type,
+                    "price": dish.price if dish.price else None,
+                    "stop_list": dish.stop_list,
+                    "additives": dish.additives,
+                    "is_combo": dish.is_combo,
+                    "variants": []
+                }
+            if variant:
+                result[dish.id]["variants"].append({
+                    "id": variant.id,
+                    "size": variant.size,
+                    "price": variant.price
+                })
+
+        return result
+    
+    @connection
+    async def get_all_dishes_for_admin(self, session: AsyncSession):
+        query = (
+            select(Dish, DishVariant)
+            .outerjoin(DishVariant, Dish.id == DishVariant.dish_id)
+        )
+        query_result = await session.execute(query)
+        result = {}
+        for dish, variant in query_result:
+            if dish.id not in result:
                 result[dish.id] = {
                     "_id": dish._id,
                     "dish_name": dish.dish_name,
@@ -110,7 +143,7 @@ class DataBaseDish(DataBaseMainConnect):
         session.add(new_dish)
         await session.flush()
         
-        if dish_data.variants:
+        if dish_data.variants is not None:
             for variant_data in dish_data.variants:
                 variant = DishVariant(
                     dish_id=new_dish.id,
@@ -143,7 +176,7 @@ class DataBaseDish(DataBaseMainConnect):
             dish.dish_name = dish_data.dish_name
         if dish_data.description is not None:
             dish.description = dish_data.description
-        if dish_data.price is not None:
+        if dish_data.price is not None or dish_data.price == 0:
             dish.price = dish_data.price
         if dish_data.available is not None:
             dish.available = dish_data.available
