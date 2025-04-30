@@ -24,7 +24,7 @@ class DatabaseUser(DataBaseMainConnect):
     @connection
     async def get_all_users(self, session: AsyncSession) -> dict:
         result = await session.execute(select(User))
-        return {"users": [{"id": u.id, "name": u.full_name, "telegram_name": u.telegram_name, "telegram_username": u.telegram_username, "banned": u.banned} for u in result.scalars()]}
+        return {"users": [{"id": u.id, "telegram_id": u.telegram_id, "name": u.full_name, "telegram_name": u.telegram_name, "telegram_username": u.telegram_username, "banned": u.banned} for u in result.scalars()]}
 
     @connection
     async def get_user(self, id: int, session: AsyncSession) -> dict:
