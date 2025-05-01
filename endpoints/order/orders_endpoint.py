@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from custom_types import EditStatusOrderType, OrderType, TelegramId
+from custom_types import EditStatusOrderType, OrderType, RemoveDishFromOrder, TelegramId
 from database.bloc import database_order, database_user
 
 router = APIRouter(
@@ -44,4 +44,17 @@ async def edit_status_order(order: EditStatusOrderType):
         raise HTTPException(
             status_code=500,
             detail=f"Ошибка при изменении статуса заказа: {str(e)}"
+        )
+    
+@router.post("/remove_dish_from_order", tags=['order'])
+async def remove_dish_from_order(request: RemoveDishFromOrder):
+    try:
+        result = await database_order.remove_dish_from_order(request)
+        return {"status": "ok", "data": result}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ошибка при удалении блюда из заказа: {str(e)}"
         )

@@ -63,3 +63,15 @@ class EditStatusOrderType(TelegramId):
     new_status: Literal["formalized", "completed", 
                         "canceled", "deleted", "unknown"] = Field(description="Новый тип заказа")
     
+
+class RemoveDishFromOrder(TelegramId):
+    order_id: int = Field(..., description="ID заказа")
+    dish_id: int = Field(..., gt=0, description="ID блюда для удаления")
+    variant_id: Optional[int] = Field(
+        None, gt=0, description="ID варианта блюда (если нужно удалить конкретный вариант)"
+    )
+
+class EditOrder(TelegramId):
+    order_id: int = Field(..., description="id заказа")
+    order: list[DishOrder] = Field(description="Новый список заказанных блюд")
+    
