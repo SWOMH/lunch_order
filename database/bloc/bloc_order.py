@@ -283,7 +283,7 @@ class DatabaseOrder(DataBaseMainConnect):
                 detail="Недостаточно прав для редактирования этого заказа"
             )
 
-        if order.status not in ["formalized", "unknown"]:
+        if order.order_status not in ["formalized", "unknown"]:
             raise HTTPException(
                 status_code=400,
                 detail="Нельзя редактировать заказ в текущем статусе"
@@ -326,7 +326,7 @@ class DatabaseOrder(DataBaseMainConnect):
             select(func.count(OrderItem.id)).where(OrderItem.order_id == order.id))
         
         if remaining_items == 0:
-            order.status = "deleted"
+            order.order_status = "deleted"
 
         await session.commit()
 
