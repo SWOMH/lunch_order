@@ -21,6 +21,7 @@ class Dish(Base):
     __tablename__ = 'dish'
     id: Mapped[intpk]
     _id: Mapped[str] = mapped_column(nullable=True)  # Сервисный id блюда
+    id_iiko: Mapped[int | None] = mapped_column(nullable=True) # id блюда в айке
     dish_name: Mapped[str] = mapped_column(nullable=False)  # Блюдо
     description: Mapped[str | None] = mapped_column(nullable=True)  # Описание
     price: Mapped[float | None] = mapped_column(nullable=True) # Цена
