@@ -1,0 +1,51 @@
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  fastapi:
+    build: .
+    container_name: fastapi
+    environment:
+      - TZ=Europe/Moscow
+      - REDIS_URL=redis://redis:6379/0
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    command: uvicorn main:app --host 0.0.0.0 --port 80
+
+  celery:
+    build: .
+    container_name: celery
+    environment:
+      - TZ=Europe/Moscow
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - FLOWER_BASIC_AUTH=user:password
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - fastapi
+    ports:
+      - "5555:5555"  # Flower dashboard
+    command: >
+      sh -c "celery -A tasks worker --concurrency=1 --loglevel=info
+      & celery -A tasks beat
+      & celery -A tasks flower --port=5555 --basic_auth=$$FLOWER_BASIC_AUTH"
+
+volumes:
+  redis_data:
