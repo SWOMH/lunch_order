@@ -148,6 +148,45 @@ class DatabaseOrder(DataBaseMainConnect):
         if len(result) == 0:            
             return {"status": "success", "orders": "There are no orders for today"}
         return {"status": "success", "orders": result}
+    
+
+    @connection
+    async def get_today_orders_formatted(session: AsyncSession) -> list[dict]:
+        """Получает заказы за сегодня и возвращает для Telegram"""
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        orders = await session.execute(
+            select(Order)
+            .where(Order.datetime >= today_start)
+            .options(
+                selectinload(Order.user),
+                selectinload(Order.order_items).selectinload(OrderItem.dish),
+                selectinload(Order.order_items).selectinload(OrderItem.variant)
+            )
+            .order_by(Order.datetime.desc())
+        )
+        orders = orders.scalars().all()
+        
+        formatted_orders = []
+        for order in orders:
+            order_text = f"Заказ #{order.id}\n"
+            order_text += f"{order.user.full_name}\n"
+            
+            for item in order.order_items:
+                dish_name = item.dish.dish_name if item.dish else "Неизвестное блюдо"
+                if item.variant:
+                    order_text += f"{dish_name} {item.variant.size}\n"
+                else:
+                    order_text += f"{dish_name}\n"
+                if item.count > 1:
+                    order_text += f" × {item.count}\n"
+            
+            order_text += f"Итого: {order.amount} руб.\n"
+            order_text += "======================="
+            
+            formatted_orders.append(order_text)
+        
+        return formatted_orders
 
 
     @connection
