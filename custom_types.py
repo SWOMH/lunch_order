@@ -26,6 +26,7 @@ class OrderType(TelegramId):
 
 class VariantType(BaseModel):
     dish_id: int | None = Field(None, description="ID блюда (положительное число)")
+    id_iiko: int | None = Field(None, description='Id товара в iiko')
     size: str = Field(..., min_length=1, max_length=50, 
                      description="Размер/вариант блюда (например, 'Маленький', 'Большой' или 'С креветками', 'С курицей')")
     price: float = Field(..., gt=0, description="Цена для этого варианта (положительное число)")
@@ -38,6 +39,7 @@ class VariantType(BaseModel):
 
 class DishType(BaseModel):
     dish_name: str = Field(..., min_length=1, max_length=100, description="Название блюда")
+    id_iiko: int | None = Field(None, description='Id товара в iiko')
     description: str | None = Field(None, max_length=500, description="Описание")
     price: float | None = Field(gt=0, description="Базовая цена (неотрицательное число)")
     available: bool = Field(True, description="Доступно для заказа")
@@ -60,7 +62,7 @@ class DishType(BaseModel):
     
 class EditStatusOrderType(TelegramId):
     order_id: int = Field(..., description="id заказа")
-    new_status: Literal["formalized", "completed", 
+    new_status: Literal["formalized", "completed", "accounted", 
                         "canceled", "deleted", "unknown"] = Field(description="Новый тип заказа")
     
 
