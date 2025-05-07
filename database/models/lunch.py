@@ -9,6 +9,7 @@ intpk = Annotated[int, mapped_column(primary_key=True)]
 
 class OrderStatus(str, Enum): #отслеживать статус доставки просто невозможно, кроме того, как проставлять вручную
     formalized = "formalized"
+    accounted = "accounted"
     completed = "completed"
     canceled = "canceled"
     deleted = "deleted"
