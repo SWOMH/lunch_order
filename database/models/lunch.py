@@ -57,7 +57,7 @@ class User(Base):
     is_support: Mapped[bool] = mapped_column(default=False)  # Является ли пользователь поддержкой
     is_admin: Mapped[bool] = mapped_column(default=False)  # Является ли пользователь администратором
     banned: Mapped[bool] = mapped_column(default=False)  # Забанен ли пользователь
-    in_chat: Mapped[bool] = mapped_column(default=False) # Состоит ли он в чате компании (потом реализую проверку с этим, чтобы левые люди не заказывали)
+    in_chat: Mapped[bool] = mapped_column(default=False, server_default='false') # Состоит ли он в чате компании (потом реализую проверку с этим, чтобы левые люди не заказывали)
 
     order = relationship("Order", back_populates='user')
 

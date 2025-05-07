@@ -70,6 +70,7 @@ class DataBaseDish(DataBaseMainConnect):
             if variant:
                 result[dish.id]["variants"].append({
                     "id": variant.id,
+                    "id_iiko": variant.id_iiko,
                     "size": variant.size,
                     "price": variant.price
                 })
@@ -175,6 +176,8 @@ class DataBaseDish(DataBaseMainConnect):
         
         if dish_data.dish_name is not None:
             dish.dish_name = dish_data.dish_name
+        if dish_data.id_iiko is not None:
+            dish.id_iiko = dish_data.id_iiko
         if dish_data.description is not None:
             dish.description = dish_data.description
         if dish_data.price is not None or dish_data.price == 0:
@@ -206,10 +209,12 @@ class DataBaseDish(DataBaseMainConnect):
                 
                 if existing_variant:
                     existing_variant.price = variant_data.price
+                    existing_variant.id_iiko = variant_data.id_iiko
                     variants_to_keep.add(existing_variant.id)
                 else:
                     new_variant = DishVariant(
                         dish_id=dish_id,
+                        id_iiko=variant_data.id_iiko,
                         size=variant_data.size,
                         price=variant_data.price
                     )
