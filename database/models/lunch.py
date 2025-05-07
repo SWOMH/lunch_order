@@ -39,6 +39,7 @@ class DishVariant(Base):
     __tablename__ = 'dish_variants'
     id: Mapped[intpk]
     dish_id: Mapped[int] = mapped_column(ForeignKey('public.dish.id', ondelete='CASCADE'), nullable=False)
+    id_iiko: Mapped[int | None] = mapped_column(nullable=True) # id блюда в айке
     size: Mapped[str] = mapped_column(nullable=False)  # Размер/вариант блюда (например, "Маленький", "Большой")
     price: Mapped[float] = mapped_column(nullable=False)  # Цена для этого варианта
 
@@ -55,6 +56,7 @@ class User(Base):
     is_support: Mapped[bool] = mapped_column(default=False)  # Является ли пользователь поддержкой
     is_admin: Mapped[bool] = mapped_column(default=False)  # Является ли пользователь администратором
     banned: Mapped[bool] = mapped_column(default=False)  # Забанен ли пользователь
+    in_chat: Mapped[bool] = mapped_column(default=False) # Состоит ли он в чате компании (потом реализую проверку с этим, чтобы левые люди не заказывали)
 
     order = relationship("Order", back_populates='user')
 

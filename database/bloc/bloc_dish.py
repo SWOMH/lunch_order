@@ -55,6 +55,7 @@ class DataBaseDish(DataBaseMainConnect):
             if dish.id not in result:
                 result[dish.id] = {
                     "_id": dish._id,
+                    "id_iiko": dish.id_iiko,
                     "dish_name": dish.dish_name,
                     "description": dish.description,
                     "image": dish.image if dish.image else None,

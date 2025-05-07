@@ -44,6 +44,7 @@ async def get_all_dish():
                 "id": dish_id,
                 "_id": dish_data["_id"],
                 "name": dish_data["dish_name"],
+                "id_iiko": dish_data["id_iiko"],
                 "description": dish_data["description"],
                 "image": dish_data["image"],
                 "available": dish_data["available"],
