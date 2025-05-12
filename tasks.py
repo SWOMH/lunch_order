@@ -16,32 +16,18 @@ def periodic_task(sender, **kwargs):
 )
 def send_message_in_group():
     """Задача для отправки всех заказов в группу перед тем, как отправить заказ в айку"""
+    
     try:
-        import asyncio
+        orders = database_order.get_today_orders_formatted()
         
-        async def async_task():
-            try:
-                orders = await database_order.get_today_orders_formatted()
-                
-                if not orders:
-                    await telegram.send_message("На сегодня заказов нет", id=CONSTANT.WORK_CHAT_ID)
-                    return
-                
-                message = "\n".join(orders)
-                await telegram.send_message(message, id=CONSTANT.WORK_CHAT_ID)
-            except Exception as e:
-                error_msg = f'Ошибка при формировании заказов: {str(e)}'
-                print(error_msg)
-                await telegram.send_message(error_msg, id=CONSTANT.CHAT_ID)
-                raise
+        if not orders:
+            telegram.send_message("На сегодня заказов нет", id=CONSTANT.WORK_CHAT_ID)
+            return
         
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            loop.run_until_complete(async_task())
-        finally:
-            loop.close()
-            
+        message = "\n".join(orders)
+        telegram.send_message(message, id=CONSTANT.WORK_CHAT_ID)
     except Exception as e:
-        error_msg = f'Критическая ошибка в задаче: {str(e)}'
+        error_msg = f'Ошибка при формировании заказов: {str(e)}'
         print(error_msg)
+        telegram.send_message(error_msg, id=CONSTANT.CHAT_ID)
+        raise

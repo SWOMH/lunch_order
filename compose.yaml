@@ -41,7 +41,7 @@ services:
       - redis
       - fastapi
     ports:
-      - "5555:5555"  # Flower dashboard
+      - "5556:5555"  # Flower dashboard
     command: >
       sh -c "celery -A tasks worker --concurrency=1 --loglevel=info
       & celery -A tasks beat
