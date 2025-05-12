@@ -3,7 +3,7 @@ from config import celery_app
 from constant import CONSTANT
 from telegram_cls import telegram
 from celery.schedules import crontab
-from database.bloc import database_order
+from database.telegram import sync_database
 
 @celery_app.on_after_configure.connect
 def periodic_task(sender, **kwargs):
@@ -18,7 +18,7 @@ def send_message_in_group():
     """Задача для отправки всех заказов в группу перед тем, как отправить заказ в айку"""
     
     try:
-        orders = database_order.get_today_orders_formatted()
+        orders = sync_database.get_today_orders_formatted()
         
         if not orders:
             telegram.send_message("На сегодня заказов нет", id=CONSTANT.WORK_CHAT_ID)
