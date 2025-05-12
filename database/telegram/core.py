@@ -14,3 +14,15 @@ class DatabaseCore:
             pool_size=10, max_overflow=20
         )
         self.Session = sessionmaker(bind=self.engine)
+    
+    def session_scope(self):
+        """Обеспечивает управление сессией через контекстный менеджер"""
+        session = self.Session()
+        try:
+            yield session
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()

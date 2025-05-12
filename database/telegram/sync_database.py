@@ -13,7 +13,7 @@ class Database(DatabaseCore):
         
     def get_today_orders_formatted(self) -> list[str]:
         """Получает заказы за сегодня и возвращает для Telegram"""
-        with self.Session as session:
+        with self.session_scope() as session:
             today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
             
             orders = session.execute(
