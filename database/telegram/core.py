@@ -1,6 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from sqlalchemy import create_engine
-
+from contextlib import contextmanager
 
 class Base(DeclarativeBase):
     __abstract__ = True
@@ -15,6 +15,7 @@ class DatabaseCore:
         )
         self.Session = sessionmaker(bind=self.engine)
     
+    @contextmanager
     def session_scope(self):
         """Обеспечивает управление сессией через контекстный менеджер"""
         session = self.Session()
