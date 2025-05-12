@@ -151,7 +151,7 @@ class DatabaseOrder(DataBaseMainConnect):
     
 
     @connection
-    async def get_today_orders_formatted(session: AsyncSession) -> list[dict]:
+    async def get_today_orders_formatted(self, session: AsyncSession = None) -> list[str]:
         """Получает заказы за сегодня и возвращает для Telegram"""
         today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         
