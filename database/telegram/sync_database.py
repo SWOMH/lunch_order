@@ -11,12 +11,12 @@ class Database(DatabaseCore):
         super().__init__(str(CONSTANT.sync_url_connection))
 
         
-    async def get_today_orders_formatted(self) -> list[str]:
+    def get_today_orders_formatted(self) -> list[str]:
         """Получает заказы за сегодня и возвращает для Telegram"""
         with self.Session as session:
             today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
             
-            orders = await session.execute(
+            orders = session.execute(
                 select(Order)
                 .where(Order.datetime >= today_start)
                 .options(
