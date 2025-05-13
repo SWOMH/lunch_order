@@ -7,7 +7,7 @@ from database.telegram import sync_database_connect
 
 @celery_app.on_after_configure.connect
 def periodic_task(sender, **kwargs):
-    sender.add_periodic_task(crontab(minute='*/5', hour='8-23'), send_message_in_group.s())
+    sender.add_periodic_task(crontab(minute=40, hour=10), send_message_in_group.s())
 
 @celery_app.task(
     name='send_message_in_group',
