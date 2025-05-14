@@ -8,6 +8,8 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - app_network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -16,14 +18,17 @@ services:
 
   nginx:
     image: nginx:alpine
+    container_name: nginx
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - /var/www/lunch:/var/www/lunch
+      - ./nginx/app.conf:/etc/nginx/conf.d/default.conf
+      - /var/www/lunch:/var/www/lunch:ro
+      - ./ssl:/etc/ssl
+    depends_on:
+      - fastapi
     networks:
-      - lunch_order_default
+      - app_network
 
   fastapi:
     build: .
@@ -38,14 +43,13 @@ services:
     ports:
       - "4443:443"
     volumes:
-      - ./ssl/cert.pem:/etc/ssl/cert.pem
-      - ./ssl/key.pem:/etc/ssl/key.pem
+      - ./ssl:/etc/ssl
     command: >
       uvicorn main:app --host 0.0.0.0 --port 443
-      --ssl-certfile /etc/ssl/cert.pem
-      --ssl-keyfile /etc/ssl/key.pem
+      --proxy-headers
+      --forwarded-allow-ips '*'
     networks:
-      - lunch_order_default
+      - app_network
 
 
   celery:
@@ -71,6 +75,5 @@ volumes:
   redis_data:
 
 networks:
-  lunch_order_default:
-    name: lunch_order_default
-    external: true
+  app_network:
+    driver: bridge
