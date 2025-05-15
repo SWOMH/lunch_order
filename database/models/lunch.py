@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, text, Integer, DateTime, Float
+from sqlalchemy import BigInteger, ForeignKey, text, Integer, DateTime, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import ENUM as PgEnum
 from enum import Enum
@@ -50,7 +50,7 @@ class DishVariant(Base):
 class User(Base):
     __tablename__ = 'users'
     id: Mapped[intpk]
-    telegram_id: Mapped[int] = mapped_column(unique=True)  # ID пользователя в Telegram
+    telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True)  # ID пользователя в Telegram
     telegram_name: Mapped[str] = mapped_column(nullable=True)  # Имя пользователя в Telegram
     telegram_username: Mapped[str] = mapped_column(nullable=True)  # Юзернейм в Telegram
     full_name: Mapped[str] = mapped_column(nullable=False)  # Полное имя пользователя
