@@ -54,7 +54,7 @@ class DatabaseUser(DataBaseMainConnect):
                         telegram_name=user_info.telegram_name, telegram_username=user_info.telegram_username)
         session.add(new_user)
         await session.commit()
-        return {"message": "Пользователь успешно зарегистрирован", "telegram_id": user_info.id,
+        return {"message": "Пользователь успешно зарегистрирован", "telegram_id": user_info.telegram_id,
                 "full_name": user_info.full_name}
     
     @connection
