@@ -44,13 +44,13 @@ class DatabaseUser(DataBaseMainConnect):
 
     @connection
     async def register_user(self, user_info: UserSchema, session: AsyncSession) -> dict:
-        query = select(User).filter_by(telegram_id=user_info.id)
+        query = select(User).filter_by(telegram_id=user_info.telegram_id)
         user = await session.execute(query)
         existing_user = user.scalar_one_or_none()
         if existing_user:
             raise HTTPException(status_code=400, detail="Пользователь с таким Telegram ID уже существует")
 
-        new_user = User(telegram_id=user_info.id, full_name=user_info.full_name, 
+        new_user = User(telegram_id=user_info.telegram_id, full_name=user_info.full_name, 
                         telegram_name=user_info.telegram_name, telegram_username=user_info.telegram_username)
         session.add(new_user)
         await session.commit()
