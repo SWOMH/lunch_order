@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from custom_types import TelegramId
+from custom_types import TelegramId, UserSchema
 from datetime import datetime
 from database.main_connect import DataBaseMainConnect
 from database.models.lunch import User, Dish, Order, OrderItem, DishVariant
@@ -43,18 +43,19 @@ class DatabaseUser(DataBaseMainConnect):
     
 
     @connection
-    async def register_user(self, id: int, full_name: str, session: AsyncSession) -> dict:
-        query = select(User).filter_by(telegram_id=id)
+    async def register_user(self, user_info: UserSchema, session: AsyncSession) -> dict:
+        query = select(User).filter_by(telegram_id=user_info.id)
         user = await session.execute(query)
         existing_user = user.scalar_one_or_none()
         if existing_user:
             raise HTTPException(status_code=400, detail="Пользователь с таким Telegram ID уже существует")
 
-        new_user = User(telegram_id=id, full_name=full_name)
+        new_user = User(telegram_id=user_info.id, full_name=user_info.full_name, 
+                        telegram_name=user_info.telegram_name, telegram_username=user_info.telegram_username)
         session.add(new_user)
         await session.commit()
         return {"message": "Пользователь успешно зарегистрирован", "telegram_id": id,
-                "full_name": full_name}
+                "full_name": user_info.full_name}
     
     @connection
     async def get_user_orders_and_actual(self, telegram_id: int, session: AsyncSession, actual_orders: bool = None) -> dict:
