@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, ForeignKey, text, Integer, DateTime, Float
+from sqlalchemy import BigInteger, ForeignKey, Numeric, text, Integer, DateTime, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import ENUM as PgEnum
 from enum import Enum
@@ -22,7 +22,7 @@ class Dish(Base):
     __tablename__ = 'dish'
     id: Mapped[intpk]
     _id: Mapped[str] = mapped_column(nullable=True)  # Сервисный id блюда
-    id_iiko: Mapped[int | None] = mapped_column(nullable=True) # id блюда в айке
+    id_iiko: Mapped[int | None] = mapped_column(Numeric(precision=38, scale=0), nullable=True) # id блюда в айке
     dish_name: Mapped[str] = mapped_column(nullable=False)  # Блюдо
     description: Mapped[str | None] = mapped_column(nullable=True)  # Описание
     price: Mapped[float | None] = mapped_column(nullable=True) # Цена
@@ -40,7 +40,7 @@ class DishVariant(Base):
     __tablename__ = 'dish_variants'
     id: Mapped[intpk]
     dish_id: Mapped[int] = mapped_column(ForeignKey('public.dish.id', ondelete='CASCADE'), nullable=False)
-    id_iiko: Mapped[int | None] = mapped_column(nullable=True) # id блюда в айке
+    id_iiko: Mapped[int | None] = mapped_column(Numeric(precision=38, scale=0), nullable=True) # id блюда в айке
     size: Mapped[str] = mapped_column(nullable=False)  # Размер/вариант блюда (например, "Маленький", "Большой")
     price: Mapped[float] = mapped_column(nullable=False)  # Цена для этого варианта
 
