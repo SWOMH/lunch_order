@@ -8,6 +8,7 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    hostname: redis_lunch
     networks:
       - app_network
     healthcheck:
@@ -66,10 +67,12 @@ services:
       - fastapi
     ports:
       - "5556:5555"  # Flower dashboard
+    networks:
+      - app_network
     command: >
       sh -c "celery -A tasks worker --concurrency=1 --loglevel=info
       & celery -A tasks beat
-      & celery -A tasks flower --port=5551 --basic_auth=$$FLOWER_BASIC_AUTH"
+      & celery -A tasks flower --port=5555 --basic_auth=$$FLOWER_BASIC_AUTH"
 
 volumes:
   redis_data:
