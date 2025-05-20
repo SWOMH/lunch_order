@@ -2,7 +2,7 @@
 services:
   redis:
     image: redis:7-alpine
-    container_name: redis
+    container_name: redis_lunch
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -57,8 +57,8 @@ services:
     container_name: celery
     environment:
       - TZ=Europe/Moscow
-      - CELERY_BROKER_URL=redis://redis:6379/1
-      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - CELERY_BROKER_URL=redis://redis_lunch:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis_lunch:6379/1
       - FLOWER_BASIC_AUTH=user:password
     restart: unless-stopped
     depends_on:
@@ -69,7 +69,7 @@ services:
     command: >
       sh -c "celery -A tasks worker --concurrency=1 --loglevel=info
       & celery -A tasks beat
-      & celery -A tasks flower --port=5555 --basic_auth=$$FLOWER_BASIC_AUTH"
+      & celery -A tasks flower --port=5551 --basic_auth=$$FLOWER_BASIC_AUTH"
 
 volumes:
   redis_data:
