@@ -52,7 +52,7 @@ class DataBaseDish(DataBaseMainConnect):
         query_result = await session.execute(query)
         result = {}
         for dish, variant in query_result:
-            if dish.id not in result:
+            if dish.id not in result and dish.available:
                 result[dish.id] = {
                     "_id": dish._id,
                     "id_iiko": dish.id_iiko,
